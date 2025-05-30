@@ -13,6 +13,14 @@
       .hide {
         display: none;
       }
+      .car {
+        width: 50px;
+        height: 70px;
+        background-color: red;
+        position: absolute;
+        left: 50px;
+        bottom: 120px;
+      }
     </style>
   </head>
   <body>
@@ -25,7 +33,7 @@
           If you hit another car you will lose
         </p>
       </div>
-      <div class="gameArea hide">hello</div>
+      <div class="gameArea hide"></div>
     </div>
 
     <script>
@@ -34,6 +42,10 @@
       const gameArea = document.querySelector(".gameArea");
 
       console.log(gameArea);
+
+      startScreen.addEventListener("click", start);
+
+      let player = {};
 
       let keys = {
         ArrowUp: false,
@@ -48,15 +60,35 @@
       function keyDown(e) {
         e.preventDefault();
         keys[e.key] = true;
-        console.log(e.key);
+        // console.log(e.key);
         console.log(keys);
       }
 
       function keyUp(e) {
         e.preventDefault();
         keys[e.key] = false;
-        console.log(e.key);
+        // console.log(e.key);
         console.log(keys);
+      }
+
+      function gamePlay() {
+        console.log("I am clicked.");
+        if (player.start) {
+          window.requestAnimationFrame(gamePlay);
+        }
+      }
+
+      function start() {
+        gameArea.classList.remove("hide");
+        startScreen.classList.add("hide");
+
+        player.start = true;
+        window.requestAnimationFrame(gamePlay);
+
+        let car = document.createElement("div");
+        car.setAttribute("class", "car");
+        // car.innerText = "Hello i am you car";
+        gameArea.appendChild(car);
       }
     </script>
   </body>

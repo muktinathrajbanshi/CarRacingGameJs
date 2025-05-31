@@ -3,11 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Flamenco:wght@300;400&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Jost:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Piazzolla:ital,opsz,wght@0,8..30,100..900;1,8..30,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <title>JsGame</title>
     <style>
       * {
         margin: 0;
         padding: 0;
+        font-family: "Josefin Sans", sans-serif;
+      }
+
+      .carGame {
+        width: 100%;
+        height: 100vh;
+        background-image: url("bg.png");
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
       }
 
       .hide {
@@ -16,10 +31,13 @@
       .car,
       .enemy {
         width: 50px;
-        height: 70px;
-        background-color: red;
+        height: 80px;
+        background: red;
         position: absolute;
         bottom: 120px;
+        background-image: url("mainhero.png");
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
       }
 
       .lines {
@@ -37,6 +55,43 @@
         margin: auto;
         position: relative;
         overflow: hidden;
+        border-right: 7px dashed #c8d6e5;
+        border-left: 7px dashed #c8d6e5;
+      }
+      .score {
+        position: absolute;
+        top: 15px;
+        left: 40px;
+        background: #2f3640;
+        width: 300px;
+        /* height: 70px; */
+        line-height: 70px;
+        text-align: center;
+        color: #fff;
+        font-size: 1.5rem;
+        box-shadow: 0 5px 5px #777;
+      }
+
+      .startScreen {
+        position: absolute;
+        background-color: #2f3640;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        z-index: 1;
+        text-align: center;
+        border: 1px solid #2f3640;
+        padding: 15px;
+        margin: auto;
+        width: 24%;
+        cursor: pointer;
+        letter-spacing: 5;
+        font-size: 17px;
+        word-spacing: 3;
+        line-height: 30px;
+        text-transform: uppercase;
+        box-shadow: 0 5px 5px #777;
       }
     </style>
   </head>
@@ -50,7 +105,7 @@
           If you hit another car you will lose
         </p>
       </div>
-      <div class="gameArea hide"></div>
+      <div class="gameArea"></div>
     </div>
 
     <script>
@@ -62,7 +117,7 @@
 
       startScreen.addEventListener("click", start);
 
-      let player = { speed: 5 };
+      let player = { speed: 5, score: 0 };
 
       let keys = {
         ArrowUp: false,
@@ -113,12 +168,22 @@
         });
       }
 
+      function endGame() {
+        player.start = false;
+        startScreen.classList.remove("hide");
+        startScreen.innerHTML =
+          "Game Over <br> Your final score is " +
+          player.score +
+          " <br> Press here to restart the Game";
+      }
+
       function moveEnemy(car) {
         let enemy = document.querySelectorAll(".enemy");
 
         enemy.forEach(function (item) {
           if (isCollide(car, item)) {
             console.log("Boom HIT");
+            endGame();
           }
 
           if (item.y >= 750) {
@@ -143,7 +208,7 @@
           if (keys.ArrowUp && player.y > road.top + 70) {
             player.y -= player.speed;
           }
-          if (keys.ArrowDown && player.y < road.bottom - 70) {
+          if (keys.ArrowDown && player.y < road.bottom - 85) {
             player.y += player.speed;
           }
           if (keys.ArrowLeft && player.x > 0) {
@@ -157,14 +222,21 @@
           car.style.left = player.x + "px";
 
           window.requestAnimationFrame(gamePlay);
+          console.log(player.score++);
+
+          player.score++;
+          let ps = player.score - 2;
+          score.innerText = "Score: " + ps;
         }
       }
 
       function start() {
-        gameArea.classList.remove("hide");
+        // gameArea.classList.remove("hide");
         startScreen.classList.add("hide");
+        gameArea.innerHTML = "";
 
         player.start = true;
+        player.score = 0;
         window.requestAnimationFrame(gamePlay);
 
         for (x = 0; x < 5; x++) {
@@ -191,10 +263,18 @@
           enemyCar.setAttribute("class", "enemy");
           enemyCar.y = (x + 1) * 350 * -1;
           enemyCar.style.top = enemyCar.y + "px";
-          enemyCar.style.background = "blue";
+          enemyCar.style.backgroundColor = randomColor();
           enemyCar.style.left = Math.floor(Math.random() * 350) + "px";
           gameArea.appendChild(enemyCar);
         }
+      }
+
+      function randomColor() {
+        function c() {
+          let hex = Math.floor(Math.random() * 256).toString(16);
+          return ("0" + String(hex)).substr(-2);
+        }
+        return "#" + c() + c() + c();
       }
     </script>
   </body>
